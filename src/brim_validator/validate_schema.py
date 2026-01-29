@@ -3,6 +3,8 @@ import zarr
 import jsonschema
 from pathlib import Path
 import pprint
+import argparse
+import sys
 
 
 def validate_brim_data(data_path: Path, schema_path: Path):
@@ -63,9 +65,34 @@ def validate_brim_data(data_path: Path, schema_path: Path):
         print(f"An unexpected error occurred: {e}")
         return False
 
+
+def main():
+    """
+    Parses CLI arguments and runs validation.
+    """
+    parser = argparse.ArgumentParser(
+        description='Validate Zarr (.brim) file metadata against a JSON schema.'
+    )
+    
+    parser.add_argument(
+        'data_path',
+        type=Path,
+        help='Path to the .brim Zarr data store'
+    )
+    
+    parser.add_argument(
+        'schema_path',
+        type=Path,
+        help='Path to the JSON schema file'
+    )
+    
+    args = parser.parse_args()
+    
+    success = validate_brim_data(data_path=args.data_path, schema_path=args.schema_path)
+    
+    sys.exit(0 if success else 1)
+
+
 if __name__ == '__main__':
 
-    data_path = Path('../data/zebrafish_eye_confocal.brim')
-    schema_path = Path('schemas/brim_v0.1_schema.json')
-
-    validate_brim_data(data_path=data_path, schema_path=schema_path)
+    main()
