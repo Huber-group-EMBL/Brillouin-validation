@@ -15,7 +15,7 @@ The validator focuses on the file structure (presence and location of certain ke
 Here is how we go about it:
 
 - Consolidate the zarr metadata into a single JSON structure for easier validation.
-- Validate the consolidated metadata against the Brillouin specification using the JSON schema provided in [`schema/`](schema/).
+- Validate the consolidated metadata against the Brillouin specification using the JSON schema provided in [`schemas/`](schemas/).
 
 The validation is provided here in python as a proof of concept but should therefore be portable in any language that:
 
