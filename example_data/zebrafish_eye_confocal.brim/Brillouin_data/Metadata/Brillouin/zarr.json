@@ -1,0 +1,14 @@
+{
+  "attributes": {
+    "Signal_type": "spontaneous",
+    "Scattering_angle": 180.0,
+    "Scattering_angle_units": "deg",
+    "Phonons_measured": "longitudinal-like",
+    "Polarization_probed_analyzed": "circular-circular",
+    "Shift_precision": 10,
+    "Shift_precision_units": "MHz"
+  },
+  "zarr_format": 3,
+  "consolidated_metadata": null,
+  "node_type": "group"
+}

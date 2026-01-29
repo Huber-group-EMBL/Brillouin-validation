@@ -1,0 +1,10 @@
+{
+  "attributes": {
+    "Datetime": "2020-01-16T00:00:00",
+    "Temperature": 22.0,
+    "Temperature_units": "C"
+  },
+  "zarr_format": 3,
+  "consolidated_metadata": null,
+  "node_type": "group"
+}

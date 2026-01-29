@@ -1,0 +1,13 @@
+{
+  "attributes": {
+    "Wavelength": 532,
+    "Wavelength_units": "nm",
+    "Power": 10,
+    "Power_units": "mW",
+    "Lens_NA": 1.0,
+    "Immersion_medium": "oil"
+  },
+  "zarr_format": 3,
+  "consolidated_metadata": null,
+  "node_type": "group"
+}
