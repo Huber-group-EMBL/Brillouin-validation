@@ -1,5 +1,5 @@
 {
-  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://example.com/brim-v0.1.schema.json",
   "title": "BRIM File Format v0.1",
   "description": "JSON Schema for validating consolidated Zarr metadata against the BRIM (Brillouin Imaging) file format specification v0.1",
@@ -57,6 +57,18 @@
         },
         "metadata": {
           "type": "object",
+          "dependentRequired": {
+            "Brillouin_data/Data_0": ["Brillouin_data/Data_0/PSD"],
+            "Brillouin_data/Data_1": ["Brillouin_data/Data_1/PSD"],
+            "Brillouin_data/Data_2": ["Brillouin_data/Data_2/PSD"],
+            "Brillouin_data/Data_3": ["Brillouin_data/Data_3/PSD"],
+            "Brillouin_data/Data_4": ["Brillouin_data/Data_4/PSD"],
+            "Brillouin_data/Data_5": ["Brillouin_data/Data_5/PSD"],
+            "Brillouin_data/Data_6": ["Brillouin_data/Data_6/PSD"],
+            "Brillouin_data/Data_7": ["Brillouin_data/Data_7/PSD"],
+            "Brillouin_data/Data_8": ["Brillouin_data/Data_8/PSD"],
+            "Brillouin_data/Data_9": ["Brillouin_data/Data_9/PSD"]            
+          },
           "required": ["Brillouin_data"],
           "properties": {
             "Brillouin_data": {
