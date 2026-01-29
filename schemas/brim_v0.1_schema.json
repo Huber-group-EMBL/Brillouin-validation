@@ -1,0 +1,613 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://example.com/brim-v0.1.schema.json",
+  "title": "BRIM File Format v0.1",
+  "description": "JSON Schema for validating consolidated Zarr metadata against the BRIM (Brillouin Imaging) file format specification v0.1",
+  "type": "object",
+  "required": ["attributes", "zarr_format", "node_type"],
+  "properties": {
+    "attributes": {
+      "type": "object",
+      "required": ["brim_version"],
+      "properties": {
+        "brim_version": {
+          "type": "string",
+          "const": "0.1",
+          "description": "Semantic version of the BRIM specification"
+        },
+        "Subtype": {
+          "type": "string",
+          "description": "Identifier of the specific subtype"
+        },
+        "Subtype_features": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Array of strings listing all features that the subtype supports"
+        },
+        "Authors": {
+          "type": "string",
+          "description": "Information about the authors of the file"
+        },
+        "Lab": {
+          "type": "string",
+          "description": "Information about lab and/or institute"
+        }
+      },
+      "additionalProperties": true
+    },
+    "zarr_format": {
+      "type": "integer",
+      "const": 3
+    },
+    "node_type": {
+      "type": "string",
+      "const": "group"
+    },
+    "consolidated_metadata": {
+      "type": "object",
+      "required": ["metadata"],
+      "properties": {
+        "kind": {
+          "type": "string"
+        },
+        "must_understand": {
+          "type": "boolean"
+        },
+        "metadata": {
+          "type": "object",
+          "required": ["Brillouin_data"],
+          "properties": {
+            "Brillouin_data": {
+              "$ref": "#/$defs/zarrGroup"
+            }
+          },
+          "patternProperties": {
+            "^Brillouin_data/Metadata$": {
+              "$ref": "#/$defs/zarrGroup"
+            },
+            "^Brillouin_data/Metadata/(Acquisition|Brillouin|Experiment|Optics|Spectrometer)$": {
+              "$ref": "#/$defs/zarrGroup"
+            },
+            "^Brillouin_data/Data_\\d+$": {
+              "allOf": [
+                {
+                  "$ref": "#/$defs/zarrGroup"
+                },
+                {
+                  "properties": {
+                    "attributes": {
+                      "type": "object",
+                      "properties": {
+                        "Conditions_name": {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          }
+                        },
+                        "Conditions_name_units": {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          }
+                        },
+                        "Conditions": {
+                          "type": "array"
+                        }
+                      },
+                      "additionalProperties": true
+                    }
+                  }
+                }
+              ]
+            },
+            "^Brillouin_data/Data_\\d+/PSD$": {
+              "allOf": [
+                {
+                  "$ref": "#/$defs/zarrArray"
+                },
+                {
+                  "properties": {
+                    "shape": {
+                      "type": "array",
+                      "minItems": 2,
+                      "items": {
+                        "type": "integer",
+                        "minimum": 1
+                      }
+                    },
+                    "data_type": {
+                      "type": "string",
+                      "pattern": "^float"
+                    }
+                  },
+                  "required": ["shape", "data_type"]
+                }
+              ]
+            },
+            "^Brillouin_data/Data_\\d+/Frequency$": {
+              "allOf": [
+                {
+                  "$ref": "#/$defs/zarrArray"
+                },
+                {
+                  "properties": {
+                    "data_type": {
+                      "type": "string",
+                      "pattern": "^float"
+                    }
+                  },
+                  "required": ["data_type"]
+                }
+              ]
+            },
+            "^Brillouin_data/Data_\\d+/Raw_data$": {
+              "$ref": "#/$defs/zarrGroup"
+            },
+            "^Brillouin_data/Data_\\d+/Scanning$": {
+              "$ref": "#/$defs/zarrGroup"
+            },
+            "^Brillouin_data/Data_\\d+/Scanning/Spatial_map$": {
+              "allOf": [
+                {
+                  "$ref": "#/$defs/zarrGroup"
+                },
+                {
+                  "properties": {
+                    "attributes": {
+                      "type": "object",
+                      "properties": {
+                        "units": {
+                          "type": "string"
+                        },
+                        "Units": {
+                          "type": "string"
+                        }
+                      }
+                    }
+                  }
+                }
+              ]
+            },
+            "^Brillouin_data/Data_\\d+/Scanning/Spatial_map/[xyz]$": {
+              "allOf": [
+                {
+                  "$ref": "#/$defs/zarrArray"
+                },
+                {
+                  "properties": {
+                    "shape": {
+                      "type": "array",
+                      "minItems": 1,
+                      "maxItems": 1
+                    },
+                    "data_type": {
+                      "type": "string",
+                      "pattern": "^(float|uint|int)"
+                    }
+                  }
+                }
+              ]
+            },
+            "^Brillouin_data/Data_\\d+/Scanning/Cartesian_visualization$": {
+              "allOf": [
+                {
+                  "$ref": "#/$defs/zarrArray"
+                },
+                {
+                  "properties": {
+                    "shape": {
+                      "type": "array",
+                      "minItems": 3,
+                      "maxItems": 3
+                    },
+                    "data_type": {
+                      "type": "string",
+                      "pattern": "^int"
+                    },
+                    "attributes": {
+                      "type": "object",
+                      "required": ["element_size", "element_size_units"],
+                      "properties": {
+                        "element_size": {
+                          "type": "array",
+                          "minItems": 3,
+                          "maxItems": 3,
+                          "items": {
+                            "type": "number"
+                          }
+                        },
+                        "element_size_units": {
+                          "type": "string"
+                        }
+                      }
+                    }
+                  },
+                  "required": ["attributes"]
+                }
+              ]
+            },
+            "^Brillouin_data/Data_\\d+/Parameters$": {
+              "allOf": [
+                {
+                  "$ref": "#/$defs/zarrArray"
+                },
+                {
+                  "properties": {
+                    "data_type": {
+                      "type": "string",
+                      "pattern": "^float"
+                    },
+                    "attributes": {
+                      "type": "object",
+                      "required": ["Name"],
+                      "properties": {
+                        "Name": {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "required": ["attributes"]
+                }
+              ]
+            },
+            "^Brillouin_data/Data_\\d+/Timestamp$": {
+              "allOf": [
+                {
+                  "$ref": "#/$defs/zarrArray"
+                },
+                {
+                  "properties": {
+                    "shape": {
+                      "type": "array",
+                      "minItems": 1,
+                      "maxItems": 1
+                    },
+                    "data_type": {
+                      "type": "string",
+                      "pattern": "^float"
+                    }
+                  }
+                }
+              ]
+            },
+            "^Brillouin_data/Data_\\d+/Analysis_\\d+$": {
+              "allOf": [
+                {
+                  "$ref": "#/$defs/zarrGroup"
+                },
+                {
+                  "properties": {
+                    "attributes": {
+                      "type": "object",
+                      "required": ["Fit_model"],
+                      "properties": {
+                        "Fit_model": {
+                          "type": "string",
+                          "enum": ["other", "Lorentzian", "DHO", "Voigt"]
+                        },
+                        "Corrections": {
+                          "type": "string"
+                        }
+                      }
+                    }
+                  },
+                  "required": ["attributes"]
+                }
+              ]
+            },
+            "^Brillouin_data/Data_\\d+/Analysis_\\d+/Thumbnail$": {
+              "allOf": [
+                {
+                  "$ref": "#/$defs/zarrArray"
+                },
+                {
+                  "properties": {
+                    "shape": {
+                      "type": "array",
+                      "minItems": 2,
+                      "maxItems": 3
+                    }
+                  }
+                }
+              ]
+            },
+            "^Brillouin_data/Data_\\d+/Analysis_\\d+/(Shift|Width|Amplitude|Offset)_(AS|S)_\\d+$": {
+              "allOf": [
+                {
+                  "$ref": "#/$defs/zarrArray"
+                },
+                {
+                  "properties": {
+                    "shape": {
+                      "type": "array",
+                      "minItems": 1
+                    },
+                    "data_type": {
+                      "type": "string",
+                      "pattern": "^float"
+                    }
+                  }
+                }
+              ]
+            },
+            "^Brillouin_data/Data_\\d+/Analysis_\\d+/Fit_error_(AS|S)_\\d+$": {
+              "$ref": "#/$defs/zarrGroup"
+            },
+            "^Brillouin_data/Data_\\d+/Analysis_\\d+/Fit_error_(AS|S)_\\d+/(RMSE|R2)$": {
+              "allOf": [
+                {
+                  "$ref": "#/$defs/zarrArray"
+                },
+                {
+                  "properties": {
+                    "shape": {
+                      "type": "array",
+                      "minItems": 1
+                    },
+                    "data_type": {
+                      "type": "string",
+                      "pattern": "^float"
+                    }
+                  }
+                }
+              ]
+            },
+            "^Brillouin_data/Data_\\d+/Analysis_\\d+/Fit_error_(AS|S)_\\d+/Cov_matrix$": {
+              "allOf": [
+                {
+                  "$ref": "#/$defs/zarrArray"
+                },
+                {
+                  "properties": {
+                    "shape": {
+                      "type": "array",
+                      "minItems": 3
+                    },
+                    "data_type": {
+                      "type": "string",
+                      "pattern": "^float"
+                    }
+                  }
+                }
+              ]
+            },
+            "^Brillouin_data/Data_\\d+/Calibration$": {
+              "allOf": [
+                {
+                  "$ref": "#/$defs/zarrGroup"
+                },
+                {
+                  "properties": {
+                    "attributes": {
+                      "type": "object",
+                      "properties": {
+                        "Description": {
+                          "type": "string"
+                        },
+                        "Temperature": {
+                          "type": "number"
+                        },
+                        "Datetime": {
+                          "type": "string",
+                          "format": "date-time"
+                        },
+                        "FSR": {
+                          "type": "number"
+                        }
+                      }
+                    }
+                  }
+                }
+              ]
+            },
+            "^Brillouin_data/Data_\\d+/Calibration/Index$": {
+              "allOf": [
+                {
+                  "$ref": "#/$defs/zarrArray"
+                },
+                {
+                  "properties": {
+                    "shape": {
+                      "type": "array",
+                      "minItems": 1,
+                      "maxItems": 1
+                    },
+                    "data_type": {
+                      "type": "string",
+                      "pattern": "^int"
+                    }
+                  }
+                }
+              ]
+            },
+            "^Brillouin_data/Data_\\d+/Calibration/\\d+$": {
+              "allOf": [
+                {
+                  "$ref": "#/$defs/zarrArray"
+                },
+                {
+                  "properties": {
+                    "shape": {
+                      "type": "array",
+                      "minItems": 2,
+                      "maxItems": 2
+                    },
+                    "data_type": {
+                      "type": "string",
+                      "pattern": "^float"
+                    },
+                    "attributes": {
+                      "type": "object",
+                      "required": ["Shift"],
+                      "properties": {
+                        "Shift": {
+                          "type": "number"
+                        }
+                      }
+                    }
+                  },
+                  "required": ["attributes"]
+                }
+              ]
+            },
+            "^Brillouin_data/Data_\\d+/Calibration/Timestamp_\\d+$": {
+              "allOf": [
+                {
+                  "$ref": "#/$defs/zarrArray"
+                },
+                {
+                  "properties": {
+                    "shape": {
+                      "type": "array",
+                      "minItems": 1,
+                      "maxItems": 1
+                    },
+                    "data_type": {
+                      "type": "string",
+                      "pattern": "^float"
+                    }
+                  }
+                }
+              ]
+            },
+            "^Brillouin_data/Data_\\d+/Calibration/Raw_data$": {
+              "$ref": "#/$defs/zarrGroup"
+            }
+          },
+          "additionalProperties": {
+            "oneOf": [
+              {
+                "$ref": "#/$defs/zarrGroup"
+              },
+              {
+                "$ref": "#/$defs/zarrArray"
+              }
+            ]
+          }
+        }
+      }
+    }
+  },
+  "$defs": {
+    "zarrGroup": {
+      "type": "object",
+      "required": ["node_type", "zarr_format"],
+      "properties": {
+        "node_type": {
+          "type": "string",
+          "const": "group"
+        },
+        "zarr_format": {
+          "type": "integer",
+          "const": 3
+        },
+        "attributes": {
+          "type": "object"
+        },
+        "consolidated_metadata": {
+          "type": "object"
+        }
+      },
+      "additionalProperties": false
+    },
+    "zarrArray": {
+      "type": "object",
+      "required": ["node_type", "zarr_format", "shape", "data_type", "chunk_grid", "chunk_key_encoding", "codecs"],
+      "properties": {
+        "node_type": {
+          "type": "string",
+          "const": "array"
+        },
+        "zarr_format": {
+          "type": "integer",
+          "const": 3
+        },
+        "shape": {
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "minimum": 0
+          }
+        },
+        "data_type": {
+          "type": "string"
+        },
+        "chunk_grid": {
+          "type": "object",
+          "required": ["name", "configuration"],
+          "properties": {
+            "name": {
+              "type": "string"
+            },
+            "configuration": {
+              "type": "object",
+              "required": ["chunk_shape"],
+              "properties": {
+                "chunk_shape": {
+                  "type": "array",
+                  "items": {
+                    "type": "integer",
+                    "minimum": 1
+                  }
+                }
+              }
+            }
+          }
+        },
+        "chunk_key_encoding": {
+          "type": "object",
+          "required": ["name"],
+          "properties": {
+            "name": {
+              "type": "string"
+            },
+            "configuration": {
+              "type": "object"
+            }
+          }
+        },
+        "fill_value": {
+          "oneOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "codecs": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["name"],
+            "properties": {
+              "name": {
+                "type": "string"
+              },
+              "configuration": {
+                "type": "object"
+              }
+            }
+          }
+        },
+        "attributes": {
+          "type": "object"
+        },
+        "storage_transformers": {
+          "type": "array"
+        }
+      },
+      "additionalProperties": false
+    }
+  }
+}
