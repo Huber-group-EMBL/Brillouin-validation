@@ -51,7 +51,7 @@ def validate_brim_data(data_path: Path, schema_path: Path):
 
     try:
         # Consolidate metadata
-        #zarr.consolidate_metadata(data_path)
+        zarr.consolidate_metadata(data_path)
         print("Metadata consolidated successfully.")
 
         # Load the metadata
