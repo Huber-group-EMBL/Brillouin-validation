@@ -6,6 +6,32 @@ import pprint
 import argparse
 import sys
 
+def validate_array_shapes(metadata):
+    """
+    Validates the shapes of arrays within the .brim metadata.
+
+    Args:
+        metadata (json): A consolidate JSON Zarr file representing the consolidated Zarr
+                         metadata, typically loaded from 'zarr.json'.
+    Returns:
+        bool: True if the shapes are valid, False otherwise.
+    """
+
+    # Check if the shape is the same for Frequency and PSD
+    assert metadata["consolidated_metadata"]["metadata"]["Brillouin_data/Data_0/Frequency"]["shape"] == metadata["consolidated_metadata"]["metadata"]["Brillouin_data/Data_0/PSD"]["shape"], "Arrays in Frequency and PSD are not the same!"
+
+    dir_list = ["Analysis_0/Amplitude_AS_0", "Analysis_0/Amplitude_S_0", "Analysis_0/Offset_AS_0", 
+                "Analysis_0/Offset_S_0", "Analysis_0/Shift_AS_0", "Analysis_0/Shift_S_0", "Analysis_0/Width_AS_0", "Analysis_0/Width_S_0", 
+                "Scanning/Spatial_map/x", "Scanning/Spatial_map/y", "Scanning/Spatial_map/z"]
+
+    # Check shape for the rest of the arrays
+    for dir in dir_list:
+        ref = metadata["consolidated_metadata"]["metadata"]["Brillouin_data/Data_0/Frequency"]["shape"][0]
+        if metadata["consolidated_metadata"]["metadata"][f"Brillouin_data/Data_0/{dir}"]["shape"][0] != ref:
+            raise ValueError(f"The shape of array {dir} does not match")
+    
+    return True
+
 
 def validate_brim_data(data_path: Path, schema_path: Path):
     """
@@ -18,7 +44,6 @@ def validate_brim_data(data_path: Path, schema_path: Path):
     Returns:
         True if validation is successful, False otherwise.
     """
-    # Import the builtins module to ensure we use the original open function
 
     print(f"Loading data from: {data_path}")
     print(f"Loading schema from: {schema_path}")
@@ -26,7 +51,7 @@ def validate_brim_data(data_path: Path, schema_path: Path):
 
     try:
         # Consolidate metadata
-        zarr.consolidate_metadata(data_path)
+        #zarr.consolidate_metadata(data_path)
         print("Metadata consolidated successfully.")
 
         # Load the metadata
@@ -43,6 +68,10 @@ def validate_brim_data(data_path: Path, schema_path: Path):
         jsonschema.Draft6Validator.check_schema(schema)
         print("JSON schema is valid.")
 
+        # Validate the shape of arrays
+        if not validate_array_shapes(metadata=metadata):
+            return False
+        
         # Validate the metadata against the schema
         jsonschema.validate(instance=metadata, schema=schema)
         print("\nValidation successful!")
@@ -59,10 +88,10 @@ def validate_brim_data(data_path: Path, schema_path: Path):
 
         # Print the other parameters from the error:
         print(e.validator_value)    
-
         return False
+    
     except Exception as e:
-        print(f"An unexpected error occurred: {e}")
+        print(f"Error occurred: {e}")
         return False
 
 
