@@ -1,0 +1,12 @@
+{
+  "attributes": {
+    "Type": "VIPA",
+    "Resolution": 0.46,
+    "Resolution_units": "GHz",
+    "Detector_type": "EMCCD",
+    "Additional_filter": "Lyot"
+  },
+  "zarr_format": 3,
+  "consolidated_metadata": null,
+  "node_type": "group"
+}

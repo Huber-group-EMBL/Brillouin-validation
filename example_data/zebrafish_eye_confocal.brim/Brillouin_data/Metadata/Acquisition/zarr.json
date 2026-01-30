@@ -1,0 +1,10 @@
+{
+  "attributes": {
+    "Scanning_strategy": "point_scanning",
+    "Acquisition_time": 180,
+    "Acquisition_time_units": "ms"
+  },
+  "zarr_format": 3,
+  "consolidated_metadata": null,
+  "node_type": "group"
+}

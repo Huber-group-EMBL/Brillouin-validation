@@ -1,0 +1,8 @@
+{
+  "attributes": {
+    "Fit_model": "Lorentzian"
+  },
+  "zarr_format": 3,
+  "consolidated_metadata": null,
+  "node_type": "group"
+}
